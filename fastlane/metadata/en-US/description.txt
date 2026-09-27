@@ -1,0 +1,24 @@
+This app tells you exactly when to stop drinking caffeine if you want to sleep tonight.
+
+Tell Cutoff when you go to bed and what you usually drink. It shows one number: "Latest coffee: 2:34 PM", with a countdown, and it moves every time you log a cup.
+
+HOW IT WORKS
+Each drink is absorbed over about an hour, then cleared at caffeine's half-life. Cutoff adds up every drink from the last two days and finds the latest minute your usual drink could still clear down to your sleep line by bedtime. The research behind it is listed in the app.
+
+WHAT YOU GET, FREE
+• Your latest coffee, and how long you've got left
+• The caffeine curve for the whole day: what's in you now, what's left at bedtime, and a ghost of one more cup
+• Drag across the curve to read any time
+• Log coffee, espresso, latte, cold brew, tea, cola, energy drinks or decaf, now or earlier
+• Every drink shows its own cutoff: a tea can be fine when a cold brew isn't
+• Today's total against the 400 mg daily figure from the FDA
+
+CUTOFF PRO, $2.99 ONCE
+• Your body, not the average: set how fast you clear caffeine and your own sleep line
+• Your own drinks: the cafe order you actually buy, with its real milligrams
+• Your week: seven nights side by side, and which ones you slept under the line
+• Last call: a reminder 20 minutes before your cutoff
+• The countdown on your Lock Screen and in the Dynamic Island
+One-time purchase. No subscription. Family Sharing.
+
+Cutoff is a planning tool built on population averages, not medical advice. Everything stays on your phone.
