@@ -157,14 +157,14 @@ struct Saucer: View {
             }
             .padding(5)
             .background {
-                Capsule().fill(Brew.cup.opacity(0.94))
+                Capsule().fill(Brew.cup)
                     .overlay(Capsule().strokeBorder(LinearGradient(colors: [.white.opacity(0.14), .white.opacity(0.02)], startPoint: .top, endPoint: .bottom)))
                     .shadow(color: .black.opacity(0.5), radius: 22, y: 10)
             }
             // The cup on its saucer.
             Button(action: add) {
                 ZStack {
-                    Circle().fill(Brew.cup.opacity(0.94))
+                    Circle().fill(Brew.cup)
                         .overlay(Circle().strokeBorder(LinearGradient(colors: [.white.opacity(0.16), .white.opacity(0.02)], startPoint: .top, endPoint: .bottom)))
                         .overlay(Circle().strokeBorder(Brew.line).padding(6))
                         .shadow(color: .black.opacity(0.5), radius: 22, y: 10)

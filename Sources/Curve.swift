@@ -84,7 +84,7 @@ struct CurveChart: View {
                     // Sleep line.
                     var sl = Path(); sl.move(to: CGPoint(x: 0, y: Y(line))); sl.addLine(to: CGPoint(x: W, y: Y(line)))
                     ctx.stroke(sl, with: .color(Brew.moon.opacity(0.7)), style: StrokeStyle(lineWidth: 1.2, dash: [3, 4]))
-                    ctx.draw(Text("sleep line \(Int(line)) mg").font(.ui(10, .bold)).foregroundColor(Brew.moon), at: CGPoint(x: 6, y: Y(line) - 9), anchor: .leading)
+                    ctx.draw(Text("sleep line \(Int(line)) mg").font(.ui(10, .bold)).foregroundColor(Brew.moon), at: CGPoint(x: W - 4, y: Y(line) + 10), anchor: .trailing)
 
                     // Bedtime.
                     var bl = Path(); bl.move(to: CGPoint(x: bx, y: 14)); bl.addLine(to: CGPoint(x: bx, y: H))

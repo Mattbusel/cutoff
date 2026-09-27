@@ -45,6 +45,7 @@ struct WeekView: View {
             stat("\(under)/7", "nights under the line", Brew.moon)
             stat(avgLast.map { Fmt.mins($0).replacingOccurrences(of: " ", with: "\u{00a0}") } ?? "–", "usual last cup", Brew.cream)
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     func stat(_ v: String, _ l: String, _ c: Color) -> some View {
@@ -52,7 +53,7 @@ struct WeekView: View {
             Text(v).font(.serif(24, .bold)).foregroundStyle(c).lineLimit(1).minimumScaleFactor(0.55)
             Text(l).font(.ui(11, .semibold)).foregroundStyle(Brew.dim).fixedSize(horizontal: false, vertical: true)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .card(14, radius: 20)
     }
 
