@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cutoff: one more coffee? Here's until when.</title>
+<meta name="description" content="Have the coffee. Cutoff estimates the latest time you can drink one more cup and still be under your caffeine line by bedtime.">
+<style>
+:root{--bg:#1c120c;--card:#2a1b12;--line:#4a3222;--text:#f4e6d4;--dim:#bfa58c;--crema:#e8b27a;--ok:#8fd19e;--bad:#ff8a7a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:640px;margin:0 auto;padding:28px 16px 60px}
+h1{font:700 34px/1.15 Georgia,serif;margin:0 0 8px}h1 em{color:var(--crema);font-style:normal}
+.lede{color:var(--dim);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.big{font:700 44px/1.1 Georgia,serif;color:var(--crema)}.big.no{color:var(--bad);font-size:30px}
+.k{font:700 12px/1.4 ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+label{display:block;margin:10px 0 4px;color:var(--dim);font-size:14px}
+select,input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#160e09;color:var(--text);font-size:16px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+button{cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:16px}
+.add{background:var(--crema);color:#2a1606;width:100%;margin-top:12px}
+.buy{background:var(--crema);color:#2a1606;width:100%;font-size:17px}
+ul{list-style:none;padding:0;margin:8px 0 0}li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}
+li button{background:none;color:var(--dim);padding:0 4px}
+canvas{width:100%;height:160px;display:block}
+.locked{opacity:.55;pointer-events:none}.pro-tag{color:var(--crema);font-size:12px;font-weight:700}
+.fine{color:var(--dim);font-size:13px}a{color:var(--crema)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+  <h1>Have the coffee. <em>Here's until when.</em></h1>
+  <p class="lede">Cutoff does the caffeine math so one more cup is a plan, not a gamble with tonight. Tell it your bedtime, log what you drank, and it gives you the latest minute your next cup still fits.</p>
+
+  <div class="card">
+    <div class="k" id="qLabel">One more coffee?</div>
+    <div class="big" id="answer">...</div>
+    <div class="fine" id="answerSub"></div>
+    <canvas id="curve" width="600" height="160"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="k">Log a drink</div>
+    <div class="row">
+      <div><label for="drink">Drink</label><select id="drink"></select></div>
+      <div><label for="when">Time</label><input id="when" type="time"></div>
+    </div>
+    <button class="add" id="addBtn">I had this</button>
+    <ul id="list"></ul>
+  </div>
+
+  <div class="card">
+    <div class="k">Bedtime</div>
+    <input id="bedtime" type="time" value="23:00">
+  </div>
+
+  <div class="card" id="proCard">
+    <div class="k">Cutoff Pro <span class="pro-tag" id="proState">$2.99 once</span></div>
+    <div id="proBody">
+      <div class="row">
+        <div><label for="hl">How long caffeine lasts in you (half-life, hours)</label><input id="hl" type="number" min="2" max="10" step="0.5" value="5"></div>
+        <div><label for="line">Sleep line (mg left at bedtime)</label><input id="line" type="number" min="25" max="200" step="5" value="100"></div>
+      </div>
+      <div class="row">
+        <div><label for="cName">Your own drink</label><input id="cName" placeholder="Venti cold brew"></div>
+        <div><label for="cMg">Caffeine (mg)</label><input id="cMg" type="number" min="1" max="600" placeholder="360"></div>
+      </div>
+      <button class="add" id="cAdd">Save my drink</button>
+      <div style="margin-top:14px"><div class="k">Your last 7 nights</div><ul id="week"></ul></div>
+    </div>
+    <div id="buyBox" style="margin-top:14px">
+      <p class="fine" style="margin:0 0 10px">The free version uses average numbers (5 hour half-life, 100 mg line). Pro tunes it to you: your half-life and sleep line, your own drinks, and your week. One payment, no subscription, no account.</p>
+      <button class="buy" id="buyBtn">Unlock Pro for $2.99</button>
+    </div>
+  </div>
+
+  <p class="fine">An estimate based on an average caffeine model (first-order absorption, half-life about 5 hours in healthy adults; it varies a lot person to person). Not medical advice. Everything you log stays in this browser. Also on iPhone: search "Cutoff caffeine" on the App Store.</p>
+</main>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var MENU=[["Coffee, 12 oz",140],["Espresso, single",63],["Double espresso",126],["Latte, 16 oz",126],["Cold brew, 16 oz",200],["Black tea, 8 oz",47],["Green tea, 8 oz",28],["Cola, 12 oz",34],["Energy drink, 16 oz",160],["Energy drink, 8.4 oz",80],["Decaf, 12 oz",3]];
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var st=load('cutoff',{sips:[],custom:[],bed:'23:00',hl:5,line:100});
+var pro=load('cutoff.pro',false);
+function H(){return pro?+st.hl||5:5}function L(){return pro?+st.line||100:100}
+function frac(t,hl){if(t<=0)return 0;var ka=Math.log(2)/0.2,ke=Math.log(2)/Math.max(.5,hl);return ka/(ka-ke)*(Math.exp(-ke*t)-Math.exp(-ka*t))}
+function level(t,sips){var s=0;sips.forEach(function(x){var h=(t-x.at)/36e5;if(h>0&&h<60)s+=x.mg*frac(h,H())});return s}
+function bedAt(){var p=st.bed.split(':'),n=new Date(),b=new Date();b.setHours(+p[0],+p[1],0,0);if(+p[0]<12)b=new Date(b.getTime()+864e5);while(b-n>18*36e5)b=new Date(b-864e5);while(n-b>6*36e5)b=new Date(+b+864e5);return b}
+function peakAfter(b,sips){var m=0;for(var k=0;k<=36;k++)m=Math.max(m,level(+b+k*3e5,sips));return m}
+function cutoff(mg){var b=bedAt(),past=st.sips.filter(function(s){return s.at<=b&&b-s.at<60*36e5});
+ if(peakAfter(b,past)>L())return null;function ok(t){return peakAfter(b,past.concat([{at:t,mg:mg}]))<=L()}
+ var lo=+b-30*36e5,hi=+b;if(!ok(lo))return null;if(ok(hi))return hi;for(var i=0;i<30;i++){var m=(lo+hi)/2;if(ok(m))lo=m;else hi=m}return Math.floor(lo/6e4)*6e4}
+function fmt(t){return new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}
+function drinks(){return st.custom.concat(MENU.map(function(m){return{n:m[0],mg:m[1]}}))}
+function render(){
+ save('cutoff',st);
+ var sel=$('drink'),cur=sel.value;sel.innerHTML='';drinks().forEach(function(d,i){var o=document.createElement('option');o.value=i;o.textContent=d.n+' ('+d.mg+' mg)';sel.appendChild(o)});if(cur)sel.value=cur;
+ var d=drinks()[+sel.value||0];$('qLabel').textContent='One more '+d.n.split(',')[0].toLowerCase()+'?';
+ var c=cutoff(d.mg),now=Date.now();
+ if(c===null){$('answer').className='big no';$('answer').textContent='Not tonight. Tomorrow morning, yes.';$('answerSub').textContent='What you already had is near your line at bedtime ('+fmt(bedAt())+').'}
+ else if(c<now){$('answer').className='big no';$('answer').textContent='Window closed at '+fmt(c);$('answerSub').textContent='Smaller drink? Try tea or a single espresso in the list.'}
+ else{$('answer').className='big';$('answer').textContent='Yes, until '+fmt(c);$('answerSub').textContent='Estimated to stay under '+L()+' mg by bedtime at '+fmt(bedAt())+'.'}
+ var ul=$('list');ul.innerHTML='';var b=bedAt(),start=b-20*36e5;
+ st.sips.filter(function(s){return s.at>=start}).forEach(function(s){var li=document.createElement('li');li.innerHTML='<span>'+fmt(s.at)+' '+s.n.replace(/</g,'')+'</span><span>'+s.mg+' mg <button aria-label="remove">x</button></span>';li.querySelector('button').onclick=function(){st.sips=st.sips.filter(function(x){return x!==s});render()};ul.appendChild(li)});
+ drawCurve(b);
+ $('proBody').className=pro?'':'locked';$('buyBox').className=pro?'hidden':'';$('proState').textContent=pro?'unlocked, thank you':'$2.99 once';
+ $('hl').value=st.hl;$('line').value=st.line;
+ var w=$('week');w.innerHTML='';for(var k=0;k<7;k++){var bb=+b-k*864e5,s0=bb-20*36e5,ss=st.sips.filter(function(s){return s.at>=s0&&s.at<bb+4*36e5}),tot=ss.reduce(function(a,s){return a+s.mg},0),at=Math.round(level(bb,st.sips));var li=document.createElement('li');li.innerHTML='<span>'+new Date(bb).toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'})+'</span><span>'+tot+' mg, '+at+' mg at bed '+(at<=L()?'&#10003;':'')+'</span>';w.appendChild(li)}
+}
+function drawCurve(b){var cv=$('curve'),x=cv.getContext('2d'),W=cv.width,Hh=cv.height,t0=+b-18*36e5,t1=+b+3*36e5,max=Math.max(L()*2,50);
+ for(var t=t0;t<=t1;t+=6e5)max=Math.max(max,level(t,st.sips));x.clearRect(0,0,W,Hh);
+ var Y=function(v){return Hh-8-(v/max)*(Hh-16)},X=function(t){return (t-t0)/(t1-t0)*W};
+ x.strokeStyle='#8a6a52';x.setLineDash([4,4]);x.beginPath();x.moveTo(0,Y(L()));x.lineTo(W,Y(L()));x.stroke();x.beginPath();x.moveTo(X(+b),0);x.lineTo(X(+b),Hh);x.stroke();x.setLineDash([]);
+ x.strokeStyle='#e8b27a';x.lineWidth=2.5;x.beginPath();for(t=t0;t<=t1;t+=6e5){var y=Y(level(t,st.sips));t===t0?x.moveTo(X(t),y):x.lineTo(X(t),y)}x.stroke();
+ x.fillStyle='#bfa58c';x.font='12px system-ui';x.fillText('bed',X(+b)+4,14);x.fillText(L()+' mg line',4,Y(L())-4);
+ var n=Date.now();if(n>t0&&n<t1){x.fillStyle='#f4e6d4';x.beginPath();x.arc(X(n),Y(level(n,st.sips)),4,0,7);x.fill()}}
+function nowHHMM(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+$('when').value=nowHHMM();$('bedtime').value=st.bed;
+$('drink').onchange=render;$('bedtime').onchange=function(){st.bed=this.value||'23:00';render()};
+$('addBtn').onclick=function(){var d=drinks()[+$('drink').value||0],p=($('when').value||nowHHMM()).split(':'),t=new Date();t.setHours(+p[0],+p[1],0,0);if(t-Date.now()>36e5)t=new Date(t-864e5);st.sips.push({n:d.n,mg:d.mg,at:+t});st.sips.sort(function(a,b){return a.at-b.at});render()};
+$('hl').onchange=function(){st.hl=Math.min(10,Math.max(2,+this.value||5));render()};$('line').onchange=function(){st.line=Math.min(200,Math.max(25,+this.value||100));render()};
+$('cAdd').onclick=function(){var n=$('cName').value.trim(),mg=+$('cMg').value;if(!n||!mg)return;st.custom.unshift({n:n.slice(0,40),mg:Math.min(600,mg)});$('cName').value='';$('cMg').value='';render()};
+$('buyBtn').onclick=function(){var b=this;b.textContent='Opening checkout...';fetch('/api/checkout',{method:'POST'}).then(function(r){return r.json()}).then(function(j){if(j.url)location.href=j.url;else b.textContent='Checkout unavailable, try again'}).catch(function(){b.textContent='Checkout unavailable, try again'})};
+var sid=new URLSearchParams(location.search).get('session_id');
+if(sid){fetch('/api/verify?session_id='+encodeURIComponent(sid)).then(function(r){return r.json()}).then(function(j){if(j.paid){pro=true;save('cutoff.pro',true)}history.replaceState(null,'','/');render()})}
+render();setInterval(render,60000);
+})();
+</script>
+</body>
+</html>
