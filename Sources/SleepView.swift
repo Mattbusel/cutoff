@@ -42,8 +42,7 @@ struct SleepView: View {
                         if v { Task { _ = await Alerts.shared.ask(); Alerts.shared.refresh(store) } }
                     }))
                     Divider().overlay(Brew.line).padding(.leading, 44)
-                    proToggle("Countdown on the Lock Screen", "Time left for your usual, live on the Lock Screen and in the Dynamic Island.", icon: "lock.iphone", isOn: Binding(get: { store.db.profile.live && pro.unlocked }, set: { v in
-                        guard pro.allow(.live) else { return }
+                    proToggle("Countdown on the Lock Screen", "Time left for your usual, live on the Lock Screen and in the Dynamic Island.", icon: "lock.iphone", free: true, isOn: Binding(get: { store.db.profile.live }, set: { v in
                         store.db.profile.live = v; store.save()
                         if v { LiveCup.start(store) } else { LiveCup.end() }
                     }))
@@ -73,14 +72,14 @@ struct SleepView: View {
         }
     }
 
-    func proToggle(_ title: String, _ detail: String, icon: String, isOn: Binding<Bool>) -> some View {
+    func proToggle(_ title: String, _ detail: String, icon: String, free: Bool = false, isOn: Binding<Bool>) -> some View {
         Toggle(isOn: isOn) {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: icon).font(.system(size: 15, weight: .bold)).foregroundStyle(Brew.moon).frame(width: 30).padding(.top, 2)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(title).font(.ui(15.5, .bold)).foregroundStyle(Brew.cream)
-                        if !pro.unlocked { ProBadge() }
+                        if !pro.unlocked && !free { ProBadge() }
                     }
                     Text(detail).font(.ui(12)).foregroundStyle(Brew.dim).fixedSize(horizontal: false, vertical: true)
                 }

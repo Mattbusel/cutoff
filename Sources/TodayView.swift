@@ -12,6 +12,7 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     header
                     Verdict()
+                    ProNudge()
                     VStack(alignment: .leading, spacing: 14) {
                         CurveChart()
                         levels
@@ -243,4 +244,47 @@ struct SipRow: View {
             Button(role: .destructive) { withAnimation { store.remove(sip) } } label: { Label("Delete", systemImage: "trash") }
         }
     }
+}
+
+/// One gentle Pro prompt, shown at most once per reason: when today's window has closed, or after
+/// the third drink. Easy to dismiss and never covers the free answer above it.
+struct ProNudge: View {
+    @Environment(Store.self) private var store
+    @Environment(Pro.self) private var pro
+    @AppStorage("cutoff.nudge.closed") private var seenClosed = false
+    @AppStorage("cutoff.nudge.third") private var seenThird = false
+
+    private var closed: Bool { store.cutoff() == nil || (store.cutoff().map { $0 < store.now } ?? false) }
+    private var reason: String? {
+        if pro.unlocked { return nil }
+        if closed && !seenClosed { return "closed" }
+        if store.today.count >= 3 && !seenThird { return "third" }
+        return nil
+    }
+
+    var body: some View {
+        if let r = reason {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "sparkles").font(.system(size: 15, weight: .bold)).foregroundStyle(Brew.crema)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(r == "closed"
+                         ? "Pro: tune it to your own sensitivity, some people have more room."
+                         : "Three today. Pro tunes the estimate to your own half-life and shows your last 7 nights.")
+                        .font(.ui(13.5, .semibold)).foregroundStyle(Brew.cream)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button("See Cutoff Pro, \(pro.price) once") { dismiss(r); pro.paywall = .body }
+                        .font(.ui(13, .bold)).foregroundStyle(Brew.crema).buttonStyle(.plain)
+                }
+                Spacer(minLength: 0)
+                Button { withAnimation { dismiss(r) } } label: {
+                    Image(systemName: "xmark").font(.system(size: 12, weight: .bold)).foregroundStyle(Brew.faint)
+                        .frame(width: 30, height: 30)
+                }
+                .buttonStyle(.plain).accessibilityLabel("Not now")
+            }
+            .card(14, radius: 22)
+        }
+    }
+
+    private func dismiss(_ r: String) { if r == "closed" { seenClosed = true } else { seenThird = true } }
 }

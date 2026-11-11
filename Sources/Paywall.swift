@@ -28,7 +28,6 @@ struct PaywallView: View {
                         feature("cup.and.saucer.fill", Brew.cremaDeep, "Your own drinks", "Your actual cafe order, with its real milligrams.")
                         feature("chart.bar.fill", Brew.ok, "Your week", "Seven nights side by side: how much, how late, and which nights you slept under the line.")
                         feature("bell.badge.fill", Brew.moon, "Last call", "A nudge 20 minutes before your cutoff.")
-                        feature("lock.iphone", Brew.cream, "Countdown on the Lock Screen", "Time left for your usual, live on the Lock Screen and in the Dynamic Island.")
                     }
                     .card(18, radius: 26)
                     VStack(spacing: 4) {
@@ -136,7 +135,7 @@ struct ProCard: View {
                     CupTop(size: 46)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Cutoff Pro").font(.serif(20, .bold)).foregroundStyle(Brew.cream)
-                        Text("Your half-life and sleep line, your own drinks, the week, last call and the Lock Screen countdown. \(pro.price) once.")
+                        Text("Your half-life and sleep line, your own drinks, your last 7 nights and the last-call reminders. \(pro.price) once.")
                             .font(.ui(12.5)).foregroundStyle(Brew.dim).fixedSize(horizontal: false, vertical: true)
                     }
                 }

@@ -1,9 +1,9 @@
 import SwiftUI
 import StoreKit
 
-/// Cutoff Pro: one non-consumable. Today's cutoff, the curve and logging any drink are free
-/// forever. Pro adds your own drinks, your half-life and sleep line, the week, the last-call
-/// reminder and the Lock Screen countdown.
+/// Cutoff Pro: one non-consumable. Today's cutoff, the curve, logging any built-in drink and the
+/// Lock Screen countdown are free forever. Pro adds your own drinks, your half-life and sleep line,
+/// the last 7 nights and the last-call reminders.
 @MainActor
 @Observable
 final class Pro {

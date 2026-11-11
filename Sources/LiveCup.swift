@@ -1,7 +1,7 @@
 import ActivityKit
 import Foundation
 
-/// Cutoff Pro: the time left for your usual, counting down on the Lock Screen.
+/// Free: the time left for your usual, counting down on the Lock Screen.
 @MainActor
 enum LiveCup {
     static func start(_ store: Store) {

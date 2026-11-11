@@ -19,13 +19,9 @@ import asc  # noqa: E402
 PRODUCT_ID = "com.mattbusel.cutoff.pro"
 NAME = "Cutoff Pro"
 PRICE = "2.99"
-DESCRIPTION = "Every pet, the sitter sheet and the vet summary."  # 55 chars max
+DESCRIPTION = "Your half-life, your drinks, 7 nights, reminders."  # 55 chars max
 REVIEW_NOTE = (
-    "Non-consumable, one-time unlock. The app is free for one pet with every feature for that pet "
-    "(doses, reminders, vaccines, vet visits, weight, notes). Pro adds more pets, the sitter sheet PDF and "
-    "the vet visit summary PDF. To see the paywall: with one pet added, tap Add a pet on the Pets tab, or "
-    "Share the sitter sheet on the Sitter tab, or Vet visit summary on the Health tab, or See Pro on the "
-    "Cutoff Pro card at the bottom of the Pets tab. Restore purchase is on the paywall and on that card."
+    "Non-consumable, one-time unlock. Free: today's cutoff, the caffeine curve and logging any built-in drink. Pro: custom half-life and sleep line, custom drinks, the Week tab, and the last-call reminders. The Lock Screen countdown is free. To see the paywall: open the Week tab, tap Fast or Slow on the Sleep tab, tap 'Your own drink' when logging a drink, or log a third drink and tap See Cutoff Pro on the Today card. Restore purchase is on the paywall and on the Cutoff Pro card on the Sleep tab."
 )
 
 

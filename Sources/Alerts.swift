@@ -1,7 +1,7 @@
 import Foundation
 import UserNotifications
 
-/// Local notifications only: last call before the cutoff, and when it passes (Pro).
+/// Local notifications only: last call before the cutoff, and when it passes (Pro). The Lock Screen countdown is free.
 @MainActor
 final class Alerts: NSObject, UNUserNotificationCenterDelegate {
     static let shared = Alerts()
@@ -25,7 +25,7 @@ final class Alerts: NSObject, UNUserNotificationCenterDelegate {
     func refresh(_ store: Store) {
         guard !demo else { return }
         let unlocked = pro?.unlocked == true
-        if unlocked && store.db.profile.live { LiveCup.start(store) } else { LiveCup.end() }
+        if store.db.profile.live { LiveCup.start(store) } else { LiveCup.end() }
         center.removePendingNotificationRequests(withIdentifiers: ["lastcall-soon", "lastcall-now"])
         guard unlocked, store.db.profile.notify, let cut = store.cutoff() else { return }
         let u = store.usual
