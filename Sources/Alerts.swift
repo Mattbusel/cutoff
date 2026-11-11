@@ -34,7 +34,7 @@ final class Alerts: NSObject, UNUserNotificationCenterDelegate {
             guard await ask() else { return }
             let soon = cut.addingTimeInterval(-20 * 60)
             if soon > Date() {
-                add("lastcall-soon", at: soon, title: "Last call in 20 minutes", body: "Your latest \(u.noun) today is \(Fmt.time(cut)) if you want to sleep at \(Fmt.time(bed)).")
+                add("lastcall-soon", at: soon, title: "Still time for one more", body: "You have room for a \(u.noun) until about \(Fmt.time(cut)) with bed at \(Fmt.time(bed)). Estimate.")
             }
             if cut > Date() {
                 add("lastcall-now", at: cut, title: "That's the cutoff", body: "Decaf from here. Anything stronger would still be in you at bedtime.")

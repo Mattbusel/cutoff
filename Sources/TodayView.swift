@@ -161,7 +161,7 @@ struct TodayView: View {
     }
 }
 
-/// The headline: latest coffee at 2:50 PM, and how long until then.
+/// The headline is permission: one more? Yes, until 2:50 PM. An estimate, never a promise.
 struct Verdict: View {
     @Environment(Store.self) private var store
     @Environment(Router.self) private var router
@@ -171,7 +171,7 @@ struct Verdict: View {
         let now = store.now
         let cut = store.cutoff()
         VStack(alignment: .leading, spacing: 10) {
-            Caps("Latest \(u.noun)", color: Brew.crema)
+            Caps(cut.map { $0 > now } ?? false ? "One more \(u.noun)? Yes, until" : "Latest \(u.noun)", color: Brew.crema)
             if let cut, cut > now.addingTimeInterval(-6 * 3600) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(Fmt.hm(cut)).font(.serif(84, .bold)).foregroundStyle(cut > now ? Brew.cream : Brew.dim)
@@ -179,9 +179,9 @@ struct Verdict: View {
                     Text(Fmt.ampm(cut)).font(.serif(30, .semibold)).foregroundStyle(Brew.crema)
                 }
                 if cut > now {
-                    pill(icon: "hourglass", text: "\(Fmt.span(cut.timeIntervalSince(now))) left for a \(u.name.lowercased())", tint: Brew.crema)
+                    pill(icon: "hourglass", text: "You still have room. \(Fmt.span(cut.timeIntervalSince(now))) left for a \(u.name.lowercased()) (estimate)", tint: Brew.crema)
                 } else {
-                    pill(icon: "moon.zzz.fill", text: "That was \(Fmt.span(now.timeIntervalSince(cut))) ago. Decaf from here.", tint: Brew.moon)
+                    pill(icon: "moon.zzz.fill", text: "Your window closed \(Fmt.span(now.timeIntervalSince(cut))) ago. Decaf still fits, and a smaller drink might too.", tint: Brew.moon)
                 }
             } else {
                 Text("Done for today").font(.serif(54, .bold)).foregroundStyle(Brew.cream).minimumScaleFactor(0.6).lineLimit(1)
@@ -193,7 +193,7 @@ struct Verdict: View {
             }
             if store.usual.mg > 0 {
                 Button { router.sheet = .add } label: {
-                    Text("For a smaller drink the cutoff is later. Tap a drink to see its time.")
+                    Text("Smaller drinks have a later window. Tap a drink to see its time. Times are estimates from average caffeine half-life.")
                         .font(.ui(12, .medium)).foregroundStyle(Brew.faint).multilineTextAlignment(.leading)
                 }
                 .buttonStyle(.plain)

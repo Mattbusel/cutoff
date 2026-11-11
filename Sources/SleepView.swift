@@ -262,7 +262,7 @@ struct Onboarding: View {
         VStack(alignment: .leading, spacing: 14) {
             Moon(size: 44)
             Text("When do you go to bed?").font(.serif(36, .bold)).foregroundStyle(Brew.cream).fixedSize(horizontal: false, vertical: true)
-            Text("Cutoff works backwards from lights out.").font(.ui(15)).foregroundStyle(Brew.dim)
+            Text("Cutoff works backwards from lights out to find how long you still have room for coffee.").font(.ui(15)).foregroundStyle(Brew.dim)
             DatePicker("", selection: $bed, displayedComponents: .hourAndMinute).datePickerStyle(.wheel).labelsHidden().frame(maxWidth: .infinity)
         }
     }
@@ -297,13 +297,13 @@ struct Onboarding: View {
     var reveal: some View {
         let cut = store.cutoff()
         return VStack(alignment: .leading, spacing: 12) {
-            Caps("Latest \(store.usual.noun) today", color: Brew.crema)
+            Caps(cut.map { $0 > store.now } ?? false ? "One more \(store.usual.noun)? Yes, until" : "Latest \(store.usual.noun) today", color: Brew.crema)
             if let cut, cut > store.now {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(Fmt.hm(cut)).font(.serif(88, .bold)).foregroundStyle(Brew.cream)
                     Text(Fmt.ampm(cut)).font(.serif(32, .semibold)).foregroundStyle(Brew.crema)
                 }
-                Text("After that, a \(store.usual.name.lowercased()) would still be in you at bedtime. Log each drink and the time moves to fit.")
+                Text("Until then you still have room for a \(store.usual.name.lowercased()) and should be back under your sleep line by bedtime. It is an estimate from average caffeine half-life. Log each drink and the time moves to fit.")
                     .font(.ui(15)).foregroundStyle(Brew.dim).fixedSize(horizontal: false, vertical: true)
             } else {
                 Text("Decaf from here").font(.serif(54, .bold)).foregroundStyle(Brew.cream)

@@ -36,7 +36,7 @@ struct CupLockScreen: View {
             HStack(spacing: 12) {
                 MiniCup(size: 34)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("LATEST \(attrs.drink.uppercased())").font(.system(size: 11, weight: .bold, design: .rounded)).tracking(1.2).foregroundStyle(crema)
+                    Text("ONE MORE \(attrs.drink.uppercased())? YES, UNTIL").font(.system(size: 11, weight: .bold, design: .rounded)).tracking(1.2).foregroundStyle(crema)
                     Text(clock(state.cutoff)).font(.system(size: 26, weight: .bold, design: .serif)).foregroundStyle(cream)
                 }
                 Spacer()
@@ -51,7 +51,7 @@ struct CupLockScreen: View {
             ProgressView(timerInterval: state.opened...max(state.opened.addingTimeInterval(60), state.cutoff), countsDown: true) { EmptyView() } currentValueLabel: { EmptyView() }
                 .tint(crema)
             HStack {
-                Text("Coffee window").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(cream.opacity(0.6))
+                Text("Room left").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(cream.opacity(0.6))
                 Spacer()
                 Text("Bed \(clock(state.bed))").font(.system(size: 12, weight: .bold, design: .rounded)).foregroundStyle(moon)
             }
